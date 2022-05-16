@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
 
@@ -26,8 +26,14 @@ services:
       APACHE_DOCUMENT_ROOT: /var/www/html
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`${PROJECT_BASE_URL}`)
-      traefik.http.routers.traefik.entrypoints: web
+      # HTTPS
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web.rule: Host(`${PROJECT_BASE_URL}`)
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web.entrypoints: websecure
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web.tls: true
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web.tls.certresolver: le
+      # HTTP
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web-http.rule: Host(`${PROJECT_BASE_URL}`)
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_web-http.entrypoints: web
 
   mariadb:
     image: mariadb:${MARIADB_TAG}
@@ -51,8 +57,14 @@ services:
       PMA_HOST: ${COMPOSE_PROJECT_NAME}_mariadb
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`${PMA_URL}`)
-      traefik.http.routers.traefik.entrypoints: web
+      # HTTPS
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma.rule: Host(`${PMA_URL}`)
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma.entrypoints: websecure
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma.tls: true
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma.tls.certresolver: le
+      # HTTP
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma-http.rule: Host(`${PMA_URL}`)
+      traefik.http.routers.${COMPOSE_PROJECT_NAME}_pma-http.entrypoints: web
 
 volumes:
   db_data: {}
